@@ -22,5 +22,8 @@
   "scripts": {
     "install": "concurrently \"cd client && npm install\" \"cd server && npm install\"",
     "start": "\"cd server && PORT=3001 npm start\""
-  }
+  },
+  "dependencies": {
+   "concurrently": "^3.1.0"
+ }
 }
