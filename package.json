@@ -21,7 +21,7 @@
   "homepage": "https://github.com/felixlarrouy/NoSQL_app#readme",
   "scripts": {
     "install": "concurrently \"cd client && npm install\" \"cd server && npm install\"",
-    "start": "\"cd server && PORT=3001 npm start\""
+    "start": "cd server && node index.js"
   },
   "dependencies": {
    "concurrently": "^3.1.0"
