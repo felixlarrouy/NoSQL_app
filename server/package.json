@@ -1,0 +1,14 @@
+{
+  "name": "nosql_app",
+  "version": "1.0.0",
+  "description": "server side noSQL_app_project",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Lemaitre Corentin, Laabi Salim, Larrouy Felix",
+  "license": "ISC",
+  "dependencies": {
+    "mongodb": "^3.0.4"
+  }
+}
