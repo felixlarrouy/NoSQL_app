@@ -21,6 +21,10 @@ router.get('/cities', (req, res) => {
   res.json(cities)
 })
 
+router.get('/', (req, res) => {
+  res.send("hello world")
+})
+
 app.use(router)
 
 // any routes not picked up by the server api will be handled by the react router
