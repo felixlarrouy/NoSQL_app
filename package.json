@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/felixlarrouy/NoSQL_app/issues"
   },
-  "homepage": "https://github.com/felixlarrouy/NoSQL_app#readme"
+  "homepage": "https://github.com/felixlarrouy/NoSQL_app#readme",
+  "dependencies": {
+    "mongodb": "^3.0.4"
+  }
 }
