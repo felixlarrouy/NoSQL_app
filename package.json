@@ -2,6 +2,7 @@
   "name": "nosql_app",
   "version": "1.0.0",
   "description": "App NoSQL ",
+  "engines": "8.9.4",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
