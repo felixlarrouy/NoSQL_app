@@ -2,6 +2,7 @@ const bodyParser = require('body-parser')
 const express = require('express')
 const path = require('path')
 const app = express()
+const locations = require('./modules/locations')
 
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended: false}))
@@ -22,7 +23,10 @@ router.get('/cities', (req, res) => {
 })
 
 router.get('/', (req, res) => {
-  res.send("hello world")
+  locations.getLocations((err,locations) => {
+    console.log(locations.length)
+    res.json(locations)
+  })
 })
 
 app.use(router)
