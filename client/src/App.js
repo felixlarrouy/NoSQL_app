@@ -133,7 +133,7 @@ criticalFlagChange = (value) => {
                 </div>
               </div>
               <Link to="/dev">
-               <Button type="primary" icon="settings" size="large" >Dev Tools</Button></Link>
+               <Button type="primary" icon="setting" size="large" >Dev Tools</Button></Link>
             </Sider>
             <Content className="content">
 
