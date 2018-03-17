@@ -8,7 +8,9 @@
   "main": "index.js",
   "scripts": {
     "install": "concurrently \"cd client && npm install\" \"cd server && npm install\"",
-    "start": "concurrently \"cd server && node index.js\" \"cd client && npm start\""
+    "start": "concurrently \"cd server && node index.js\" \"cd client && npm start\"",
+    "build": "concurrently \"cd client && npm run build\" \"cd server && npm run build\"",
+    "start:prod": "cd server && npm start:prod"
   },
   "repository": {
     "type": "git",
@@ -22,5 +24,6 @@
   "homepage": "https://github.com/felixlarrouy/NoSQL_app#readme",
   "dependencies": {
     "concurrently": "^3.1.0"
-  }
+  },
+  "devDependencies": {}
 }
