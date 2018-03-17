@@ -1,11 +1,20 @@
 {
   "name": "client",
-  "version": "1.0.0",
-  "description": "client side nosql_app",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "version": "0.1.0",
+  "private": true,
+  "proxy": "http://localhost:3001",
+  "dependencies": {
+    "antd": "^3.3.0",
+    "google-maps-react": "^1.1.4",
+    "react": "^16.2.0",
+    "react-dom": "^16.2.0",
+    "react-google-maps": "^9.4.5",
+    "react-scripts": "1.1.1"
   },
-  "author": "Lemaitre Corentin, Laabi Salim, Larrouy Felix",
-  "license": "ISC"
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  }
 }
