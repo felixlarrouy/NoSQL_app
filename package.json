@@ -8,7 +8,7 @@
   "main": "index.js",
   "scripts": {
     "install": "concurrently \"cd client && npm install\" \"cd server && npm install\"",
-    "start": "concurrently \"cd server && node index.js\" \"cd client && npm start\"",
+    "start": "concurrently \"cd server && set PORT=3002 && node index.js\" \"cd client && set PORT=3000 && npm start\"",
     "build": "concurrently \"cd client && npm run build\" \"cd server && npm run build\"",
     "start:prod": "cd server && npm start:prod",
     "heroku-postbuild": "npm run build"
