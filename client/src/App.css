@@ -162,6 +162,28 @@ sider>h3, h4 {
   color: rgba(0, 0, 0, 0.65) !important;
 }
 
+.ant-radio-wrapper{
+  color: #c5c4c4;
+  display: block;
+  height: 30px;
+}
+
+.ant-radio-group{
+  text-align: left;
+}
+
+.resultQuery{
+  background-color: #d6d6d6;
+  border-radius:5px;
+  color:rgba(0, 0, 0, 0.85);
+  padding:0.5em;
+}
+
+textarea{
+  width:100%;
+  border-radius: 3px;
+}
+
 /* Content */
 
 .result {
@@ -175,7 +197,7 @@ sider>h3, h4 {
 .content {
   min-height: 100vh;
   padding: 2% 20px;
-  text-align: center;
+  text-align: left;
 }
 
 .content .lead-txt {
@@ -215,6 +237,12 @@ sider>h3, h4 {
   margin-top: 1em;
   font-weight: 500;
 }
+
+textarea{
+  margin-bottom: 1em;
+      color: #000;
+}
+
 
 /* Footer */
 

@@ -4,7 +4,9 @@ import MapContainer from './components/Container';
 import './App.css';
 import { Layout, Row, Select,  Slider, Radio,Switch, Icon, Button} from 'antd';
 import Loading from './components/loading';
+import {Link} from "react-router-dom";
 const { Header, Footer, Sider, Content } = Layout;
+
 
 const RadioGroup = Radio.Group;
 const Option = Select.Option;
@@ -12,7 +14,7 @@ const Option = Select.Option;
 
 
 class App extends Component {
-  state = {filters:{boroughs: "",cuisineType: "", violationCode:[], grade :[] , score:{min:0,max:200}, criticalFlag:false}}
+  state = {filters:{boroughs: "",cuisineType: "", violationCode:[], grade :[] , score:{min:0,max:200}, criticalFlag:false},loading: false}
 
  async componentDidMount() {
    // const response = await fetch('/cities')
@@ -130,8 +132,8 @@ criticalFlagChange = (value) => {
                   <Switch checkedChildren={<Icon type="check" />}  unCheckedChildren={<Icon type="cross" />}  onChange={this.criticalFlagChange} />
                 </div>
               </div>
-
-               <Button type="primary" icon="setting" size="large" >Dev Tools</Button>
+              <Link to="/dev">
+               <Button type="primary" icon="settings" size="large" >Dev Tools</Button></Link>
             </Sider>
             <Content className="content">
 
