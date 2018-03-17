@@ -4,7 +4,7 @@ const assert = require('assert');
 // Connection URL
 const url = 'mongodb://nosql_app:p4ssword@ds113849.mlab.com:13849/inspections_restaurant';
 
-const findDocuments = function(db, callback) {
+const findAllDocuments = function(db, callback) {
   // Get the documents collection
   const collection = db.collection('inspectionsRestaurant');
   // Find some documents
@@ -17,6 +17,29 @@ const findDocuments = function(db, callback) {
   });
 }
 
+const findDocumentsQuery = function(db, callback) {
+  //Simulate what i should receive
+  var Dictionnary = {"restaurant.borough":"MANHATTAN", "restaurant.cuisineType": "Italian"};
+
+  // Get the documents collection
+  const collection = db.collection('inspectionsRestaurant');
+
+  // Find some documents
+  collection.aggregate([
+    {$match: Dictionnary},
+    //{$unwind : "$restaurant"},
+    {$group: {"_id": "$idRestaurant", "Restaurant":{$push:"$$ROOT"}}},
+    //{$unwind : "$Restaurant"}
+  ]).each(function(err, docs) {
+    assert.equal(err, null);
+
+    //Retour à la ligne pour distinguer les differents groupes de restaurant
+    console.log("\n\n Found the following records");
+    console.log(docs);
+    callback(docs);
+  });
+}
+
 exports.getDocuments = function() {
   return new Promise(function(resolve, reject) {
     // Use connect method to connect to the server
@@ -26,9 +49,8 @@ exports.getDocuments = function() {
 
       const db = client.db('inspections_restaurant');
 
-      findDocuments(db, function(err, docs) {
+      findDocumentsQuery(db, function(err, docs) {
         if (err) reject(err)
-        console.log("blabla");
         resolve(docs)
         client.close();
       });
