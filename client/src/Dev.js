@@ -15,10 +15,11 @@ const API = "http://localhost:3001/"
 class App extends Component {
   constructor(props) {
     super(props);
-    this.state = { value: "find", error:null, loading: false, resultQuery:{},resQuery:false, query:"{\"restaurant.cuisineType\":\"Mediterranean\"}", projection:"{\"restaurant\":1, \"_id\":0}"}
+    this.state = { value: "find", error:null, loading: false, resultQuery:{},resQuery:false, query:"{\"restaurant.cuisineType\":\"Mediterranean\"}", projection:"{\"restaurant\":1, \"_id\":0}", distinct:""}
     this.queryChange = this.queryChange.bind(this);
     this.projectionChange = this.projectionChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.distinctChange = this.distinctChange.bind(this);
   }
 
   handleLoadingState = (loading) =>{
@@ -26,23 +27,40 @@ class App extends Component {
   }
 
   queryTypeChange = (e) => {
-    console.log('radio checked', e.target.value);
     this.setState({
       value: e.target.value,
     });
 
   }
   queryChange(event) {
-    console.log(typeof event.target.value)
      this.setState({query: event.target.value.toString()});
    }
+
+  distinctChange(event) {
+    console.log( event.target.value)
+      this.setState({distinct: event.target.value});
+    }
 
   projectionChange(event) {
        this.setState({projection: event.target.value.toString()});
      }
 
   handleSubmit() {
-     this.getData("dev/"+this.state.value+"/"+this.state.query+"/"+this.state.projection)
+    switch(this.state.value){
+      case "find":
+       this.getData("dev/"+this.state.value+"/"+this.state.query+"/"+this.state.projection)
+       break;
+      case "aggregate":
+         this.getData("dev/"+this.state.value+"/"+this.state.query+"/none")
+         break;
+      case "distinct":
+         this.getData("dev/"+this.state.value+"/"+this.state.distinct+"/none")
+         break;
+      default:
+       this.getData("dev/"+this.state.value+"/"+this.state.query+"/"+this.state.projection)
+       break;
+
+    }
    }
 
    getData= (url)=>{
@@ -88,11 +106,25 @@ class App extends Component {
             </Sider>
             <Content className="content">
 
-            <h3>The Query :</h3>
-            <textarea rows={4} value={this.state.query}  onChange={this.queryChange} />
+            {this.state.value==="find" ?
+            <div>
+              <h3>The Query :</h3>
+              <textarea rows={4} value={this.state.query}  onChange={this.queryChange} />
 
-            <h3>The Projection :</h3>
-            <textarea rows={4} value={this.state.projection}  onChange={this.projectionChange}  />
+              <h3>The Projection :</h3>
+              <textarea rows={4} value={this.state.projection}  onChange={this.projectionChange}  />
+            </div>
+            : this.state.value ==="aggregate"?
+            <div>
+              <h3>The Query :</h3>
+              <textarea rows={4} value={this.state.query}  onChange={this.queryChange} />
+            </div>
+            :<div>
+            <h3>A field :</h3>
+            <Input value={this.state.distinct} placeholder="The field for which to return distinct values."  onChange={this.distinctChange} />
+            </div>
+          }
+
 
             <Button type="primary" onClick={this.handleSubmit}>Apply query</Button>
             {this.state.loading ? <Loading message="Working on it ..."/> :<div></div>}

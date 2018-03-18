@@ -68,7 +68,6 @@ exports.doRequest = function(type, query, projection, callback){
 
     const db = client.db('inspections_restaurant');
 const collection = db.collection('inspectionsRestaurant');
-    console.log(typeof JSON.parse(query))
 
     switch (type) {
       case "find":
@@ -90,7 +89,8 @@ const collection = db.collection('inspectionsRestaurant');
           callback(null,docs);
         });
       case "distinct":
-        collection.distinct(query).each(function(err, docs) {
+      console.log(typeof query)
+        collection.distinct(query, function(err, docs) {
           assert.equal(err, null);
 
           //Retour à la ligne pour distinguer les differents groupes de restaurant
