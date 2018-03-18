@@ -10,35 +10,57 @@ const { Header, Footer, Sider, Content } = Layout;
 const RadioGroup = Radio.Group;
 const Option = Select.Option;
 
-
+const API = "http://localhost:3001/"
 
 class App extends Component {
   constructor(props) {
-   super(props);
-  this.state = { value: "find", error:null, loading: false, resultQuery:"",resQuery:false, query:"{}", projection:"{}"}
-  this.queryChange = this.queryChange.bind(this);
-  this.projectionChange = this.projectionChange.bind(this);
-this.handleSubmit = this.handleSubmit.bind(this);
-}
+    super(props);
+    this.state = { value: "find", error:null, loading: false, resultQuery:{},resQuery:false, query:"{\"restaurant.cuisineType\":\"Mediterranean\"}", projection:"{\"restaurant\":1, \"_id\":0}"}
+    this.queryChange = this.queryChange.bind(this);
+    this.projectionChange = this.projectionChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+  }
+
+  handleLoadingState = (loading) =>{
+    this.setState({loading:loading});
+  }
+
   queryTypeChange = (e) => {
-      console.log('radio checked', e.target.value);
-      this.setState({
-        value: e.target.value,
-      });
+    console.log('radio checked', e.target.value);
+    this.setState({
+      value: e.target.value,
+    });
 
-    }
-   queryChange(event) {
-       this.setState({query: event.target.value});
+  }
+  queryChange(event) {
+    console.log(typeof event.target.value)
+     this.setState({query: event.target.value.toString()});
+   }
+
+  projectionChange(event) {
+       this.setState({projection: event.target.value.toString()});
      }
 
-     projectionChange(event) {
-         this.setState({projection: event.target.value});
-       }
+  handleSubmit() {
+     this.getData("dev/"+this.state.value+"/"+this.state.query+"/"+this.state.projection)
+   }
 
-     handleSubmit() {
-       console.log(this.state.query + "  "+this.state.projection)
-       this.setState({resultQuery:"res", resQuery: true})
-     }
+   getData= (url)=>{
+    this.setState({loading:true})
+    fetch(url,{mode: 'no-cors'}).then(res =>{
+      if (res.ok) {
+           return res.json();
+         } else {
+           console.log("error")
+           throw new Error('Failed to load the Data');
+         }
+    }).then( data =>{
+       this.setState({
+       resultQuery:JSON.stringify(data),resQuery:true, loading:false
+    }, this.handleLoadingState(false))
+
+  }).catch(err =>this.setState({ resultQuery:{} , error: err, loading:false, resQuery:false}));
+  }
 
 
     render() {
@@ -53,15 +75,16 @@ this.handleSubmit = this.handleSubmit.bind(this);
           </Header>
           <Layout>
             <Sider>
-
+            <Link to="/">
+              <Button type="primary" icon="arrow-left"  size="large" >Main App</Button></Link>
               <h3 className="filter">Query Type:</h3>
               <RadioGroup classname="queryType" onChange={this.queryTypeChange} value={this.state.value}>
                 <Radio value={"find"}>Find</Radio>
                 <Radio value={"aggregate"}>Aggregate</Radio>
                 <Radio value={"distinct"}>Distinct</Radio>
               </RadioGroup>
-                <Link to="/">
-               <Button type="primary" icon="arrow-left"  size="large" >Main App</Button></Link>
+
+
             </Sider>
             <Content className="content">
 
