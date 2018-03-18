@@ -41,6 +41,12 @@ router.get('/locations', (req, res) => {
   })
 })
 
+router.get('/criterias', (req, res) => {
+  mongodb.getCriterias((err, criterias) => {
+    res.json(criterias);
+  })
+})
+
 router.get('/dev/:type/:query/:projection', (req, res) => {
   console.log(req.params.query)
   if (!req.params.type || !req.params.query || !req.params.projection) {
