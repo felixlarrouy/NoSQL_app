@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
-import MapContainer from './components/Container';
 import './App.css';
 import { Layout, Row, Select,  Slider, Radio,Switch, Icon, Button} from 'antd';
 import Loading from './components/loading';

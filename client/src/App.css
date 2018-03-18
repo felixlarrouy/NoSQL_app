@@ -177,6 +177,7 @@ sider>h3, h4 {
   border-radius:5px;
   color:rgba(0, 0, 0, 0.85);
   padding:0.5em;
+  margin-top: 1em;
 }
 
 textarea{
