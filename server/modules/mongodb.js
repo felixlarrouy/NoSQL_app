@@ -40,6 +40,8 @@ const findDocumentsQuery = function(db, callback) {
   });
 }
 
+
+
 exports.getDocuments = function() {
   return new Promise(function(resolve, reject) {
     // Use connect method to connect to the server
@@ -56,6 +58,59 @@ exports.getDocuments = function() {
       });
     });
   })
+}
+
+exports.doRequest = function(type, query, projection, callback){
+  // Use connect method to connect to the server
+  mongodb.MongoClient.connect(url, function(err, client) {
+    if (err) callback(err);
+    console.log("Connected successfully to server");
+
+    const db = client.db('inspections_restaurant');
+const collection = db.collection('inspectionsRestaurant');
+    console.log(typeof JSON.parse(query))
+
+    switch (type) {
+      case "find":
+        collection.find(JSON.parse(query),JSON.parse(projection)).toArray(function(err, docs) {
+          assert.equal(err, null);
+          console.log("Found the following records");
+          console.log(docs)
+          if (err) callback(err);
+          callback(null, docs);
+        });
+        break;
+      case "aggregate":
+        collection.aggregate(JSON.parse(query)).each(function(err, docs) {
+          assert.equal(err, null);
+
+          //Retour à la ligne pour distinguer les differents groupes de restaurant
+          console.log("\n\n Found the following records");
+          console.log(docs)
+          callback(null,docs);
+        });
+      case "distinct":
+        collection.distinct(query).each(function(err, docs) {
+          assert.equal(err, null);
+
+          //Retour à la ligne pour distinguer les differents groupes de restaurant
+          console.log("\n\n Found the following records");
+          console.log(docs)
+          callback(null,docs);
+        });
+        break;
+      default:
+        collection.find({}).toArray(function(err, docs) {
+          assert.equal(err, null);
+          console.log("Found the following records");
+          console.log(docs)
+          if (err) callback(err);
+          callback(null, docs);
+        });
+        break;
+    }
+
+  });
 }
 
 exports.updateDocument = function(location) {

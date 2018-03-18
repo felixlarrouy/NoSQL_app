@@ -3,6 +3,7 @@ const express = require('express')
 const path = require('path')
 const app = express()
 const locations = require('./modules/locations')
+const mongodb = require('./modules/mongodb')
 
 
 app.use(bodyParser.json())
@@ -12,6 +13,16 @@ const router = express.Router()
 
 const staticFiles = express.static(path.join(__dirname, '../../client/build'))
 app.use(staticFiles)
+
+const status = {
+  'ok': 200,
+  'created': 201,
+  'noContent': 204,
+  'notModified': 304,
+  'badRequest': 400,
+  'unauthorised': 401,
+  'notFound': 404
+};
 
 router.get('/cities', (req, res) => {
   console.log(`reading this from env > ${process.env.MY_VARIABLE}`)
@@ -28,6 +39,29 @@ router.get('/locations', (req, res) => {
     console.log(locations.length)
     res.json(locations)
   })
+})
+
+router.get('/dev/:type/:query/:projection', (req, res) => {
+  console.log(req.params.query)
+  if (!req.params.type || !req.params.query || !req.params.projection) {
+    res.send(status.badRequest, {
+      'error': 'Wrong params request'
+    });
+  }
+  mongodb.doRequest(req.params.type,req.params.query, req.params.projection, (err, data) => {
+    res.setHeader('content-type', 'application/json');
+    res.setHeader('accepts', 'GET');
+    if (err) {
+      res.send(status.badRequest, {
+        'error': err.message
+      });
+    } else {
+      // res.json(data)
+      res.send(status.ok, data);
+    }
+    res.end();
+  });
+
 })
 
 app.use(router)
