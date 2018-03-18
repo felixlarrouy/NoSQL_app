@@ -19,16 +19,27 @@ const findAllDocuments = function(db, callback) {
 
 const findDocumentsQuery = function(db, callback) {
   //Simulate what i should receive
-  var Dictionnary = {"restaurant.borough":"MANHATTAN", "restaurant.cuisineType": "Italian"};
+  var Dictionnary = {
+    "restaurant.borough": "MANHATTAN",
+    "restaurant.cuisineType": "Italian"
+  };
 
   // Get the documents collection
   const collection = db.collection('inspectionsRestaurant');
 
   // Find some documents
-  collection.aggregate([
-    {$match: Dictionnary},
+  collection.aggregate([{
+      $match: Dictionnary
+    },
     //{$unwind : "$restaurant"},
-    {$group: {"_id": "$idRestaurant", "Restaurant":{$push:"$$ROOT"}}},
+    {
+      $group: {
+        "_id": "$idRestaurant",
+        "Restaurant": {
+          $push: "$$ROOT"
+        }
+      }
+    },
     //{$unwind : "$Restaurant"}
   ]).each(function(err, docs) {
     assert.equal(err, null);
@@ -65,12 +76,48 @@ exports.updateDocument = function(location) {
 
       const db = client.db('inspections_restaurant');
       const collection = db.collection('inspectionsRestaurant');
-      collection.updateOne({_id : location[0]}
-        , { $set: { "latitude": location[2], "longitude": location[3] } }, function(err, result) {
-          if(err) reject(err);
-          resolve(result);
-          client.close();
+      collection.updateOne({
+        _id: location[0]
+      }, {
+        $set: {
+          "latitude": location[2],
+          "longitude": location[3]
+        }
+      }, function(err, result) {
+        if (err) reject(err);
+        resolve(result);
+        client.close();
       });
     })
   })
+}
+
+exports.getCriterias = function() {
+  // Use connect method to connect to the server
+  mongodb.MongoClient.connect(url, function(err, client) {
+    if (err) reject(err);
+    console.log("Connected successfully to server");
+    const db = client.db('inspections_restaurant');
+    json_criterias = {}
+
+    findBoroughs(db, json_criterias, function() {
+      client.close()
+    })
+  })
+}
+
+const findBoroughs = function(db, json_criterias, callback) {
+  // Get the documents collection
+  const collection = db.collection('documents');
+  // Find some documents
+  collection.distinct("restaurant.borough", function(err, boroughs) {
+    assert.equal(err, null);
+    var boroughs_list = []
+    for (var i = 0; i < boroughs.length; i++) {
+      boroughs_list.push(boroughs[i])
+    }
+    json_criterias.boroughs = boroughs_list
+    console.log(json_criterias);
+    callback(boroughs)
+  });
 }
