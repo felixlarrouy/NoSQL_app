@@ -5,6 +5,7 @@ import { Layout, Row, Select,  Slider, Radio,Switch, Icon, Button} from 'antd';
 import Loading from './components/loading';
 import { Input } from 'antd';
 import {Link} from "react-router-dom";
+import JSONPretty from 'react-json-pretty';
 const { Header, Footer, Sider, Content } = Layout;
 
 const RadioGroup = Radio.Group;
@@ -138,7 +139,7 @@ class App extends Component {
 
             {this.state.error ? <div><h3>Something went wrong .. </h3><span>Error : Failed to load Data</span></div>:<div></div>}
 
-            {this.state.resQuery ? <p className="resultQuery">{this.state.resultQuery}</p> : <div></div> }
+            {this.state.resQuery ? <p className="resultQuery"><JSONPretty id="json-pretty" json={this.state.resultQuery}></JSONPretty></p> : <div></div> }
             </Content>
           </Layout>
           <Footer className="footer">
