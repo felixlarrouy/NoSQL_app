@@ -74,49 +74,48 @@ exports.getDocuments = function() {
 exports.doRequest = function(type, query, projection, callback) {
   // Use connect method to connect to the server
   mongodb.MongoClient.connect(url, function(err, client) {
-    if (err) callback(err);
-    console.log("Connected successfully to server");
+      if (err) callback(err);
+      console.log("Connected successfully to server");
 
-    const db = client.db('inspections_restaurant');
-const collection = db.collection('inspectionsRestaurant');
+      const db = client.db('inspections_restaurant');
+      const collection = db.collection('inspectionsRestaurant');
 
-    switch (type) {
-      case "find":
-        collection.find(JSON.parse(query), JSON.parse(projection)).toArray(function(err, docs) {
-          assert.equal(err, null);
-          console.log("Found the following records");
-          console.log(docs)
-          if (err) callback(err);
-          callback(null, docs);
-        });
-        break;
-      case "aggregate":
-        collection.aggregate(JSON.parse(query)).each(function(err, docs) {
-          assert.equal(err, null);
+      switch (type) {
+        case "find":
+          collection.find(JSON.parse(query), JSON.parse(projection)).toArray(function(err, docs) {
+            if (err) callback(err);
+            console.log("Found the following records");
+            console.log(docs)
+            callback(null, docs);
 
-          //Retour à la ligne pour distinguer les differents groupes de restaurant
-          console.log("\n\n Found the following records");
-          console.log(docs)
-          callback(null, docs);
-        });
+          });
+          break;
+        case "aggregate":
+          collection.aggregate(JSON.parse(query)).toArray(function(error, docs) {
+            if (err) callback(error);
+            console.log("Found the following records");
+            console.log(docs)
+            callback(null,docs)
+          });
+          break;
       case "distinct":
-      console.log(typeof query)
-        collection.distinct(query, function(err, docs) {
-          assert.equal(err, null);
 
-          //Retour à la ligne pour distinguer les differents groupes de restaurant
+        collection.distinct(query, function(err, docs) {
+          if (err) callback(err)
           console.log("\n\n Found the following records");
           console.log(docs)
           callback(null, docs);
+
         });
         break;
       default:
         collection.find({}).toArray(function(err, docs) {
-          assert.equal(err, null);
+          if (err) callback(err)
           console.log("Found the following records");
           console.log(docs)
           if (err) callback(err);
           callback(null, docs);
+
         });
         break;
     }

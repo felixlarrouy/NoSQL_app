@@ -48,22 +48,18 @@ router.get('/criterias', (req, res) => {
 })
 
 router.get('/dev/:type/:query/:projection', (req, res) => {
-  console.log(req.params.query)
   if (!req.params.type || !req.params.query || !req.params.projection) {
-    res.send(status.badRequest, {
+      res.status(status.badRequest).send({
       'error': 'Wrong params request'
     });
   }
   mongodb.doRequest(req.params.type,req.params.query, req.params.projection, (err, data) => {
-    res.setHeader('content-type', 'application/json');
-    res.setHeader('accepts', 'GET');
     if (err) {
-      res.send(status.badRequest, {
+      res.status(status.badRequest).send({
         'error': err.message
       });
     } else {
-      // res.json(data)
-      res.send(status.ok, data);
+      res.status(status.ok).send(data);
     }
     res.end();
   });

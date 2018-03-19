@@ -15,11 +15,16 @@ const API = "http://localhost:3001/"
 class App extends Component {
   constructor(props) {
     super(props);
-    this.state = { value: "find", error:null, loading: false, resultQuery:{},resQuery:false, query:"{\"restaurant.cuisineType\":\"Mediterranean\"}", projection:"{\"restaurant\":1, \"_id\":0}", distinct:""}
+    this.state = { value: "find", error:null, loading: false, resultQuery:{},resQuery:false,
+    query:"{\"restaurant.cuisineType\":\"Mediterranean\"}",
+    aggregate:"[{\"$match\":{\"restaurant.borough\": \"MANHATTAN\",\"restaurant.cuisineType\": \"Italian\"}},{\"$group\": {\"_id\": \"$restaurant.name\"}}]",
+    projection:"{\"restaurant\":1, \"_id\":0}",
+    distinct:"restaurant.name"}
     this.queryChange = this.queryChange.bind(this);
     this.projectionChange = this.projectionChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.distinctChange = this.distinctChange.bind(this);
+    this.aggregateChange = this.aggregateChange.bind(this);
   }
 
   handleLoadingState = (loading) =>{
@@ -32,12 +37,14 @@ class App extends Component {
     });
 
   }
+  aggregateChange(event) {
+     this.setState({query: event.target.value.toString()});
+   }
   queryChange(event) {
      this.setState({query: event.target.value.toString()});
    }
 
   distinctChange(event) {
-    console.log( event.target.value)
       this.setState({distinct: event.target.value});
     }
 
@@ -51,7 +58,7 @@ class App extends Component {
        this.getData("dev/"+this.state.value+"/"+this.state.query+"/"+this.state.projection)
        break;
       case "aggregate":
-         this.getData("dev/"+this.state.value+"/"+this.state.query+"/none")
+         this.getData("dev/"+this.state.value+"/"+this.state.aggregate+"/none")
          break;
       case "distinct":
          this.getData("dev/"+this.state.value+"/"+this.state.distinct+"/none")
@@ -116,8 +123,8 @@ class App extends Component {
             </div>
             : this.state.value ==="aggregate"?
             <div>
-              <h3>The Query :</h3>
-              <textarea rows={4} value={this.state.query}  onChange={this.queryChange} />
+              <h3>The Aggregate Query :</h3>
+              <textarea rows={4} value={this.state.aggregate}  onChange={this.aggregateChange} />
             </div>
             :<div>
             <h3>A field :</h3>
