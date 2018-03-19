@@ -13,7 +13,12 @@ const Option = Select.Option;
 
 
 class App extends Component {
-  state = {filters:{boroughs: "",cuisineType: "", violationCode:[], grade :[] , score:{min:0,max:200}, criticalFlag:false},loading: false}
+  constructor(props) {
+    super(props)
+    this.state = {filters:{boroughs: ['sdsf'],cuisineType: [], violationCode:[], grade :[] , score:{min:0,max:200}, criticalFlag:false},loading: false}
+
+  }
+  //state = {filters:{boroughs: "",cuisineType: "", violationCode:[], grade :[] , score:{min:0,max:200}, criticalFlag:false},loading: false}
 
  async componentDidMount() {
    // const response = await fetch('/cities')
@@ -24,6 +29,16 @@ class App extends Component {
    // ];
 
    // this.setState({ locations:locat})
+
+   const response = await fetch('/criterias')
+   const criterias = await response.json()
+   console.log(criterias);
+   this.setState({filters.boroughs: criterias.boroughs, filters.cuisineType: criterias.cuisineType, filters.violationCode: criterias.violationCodes, filters.grade: criterias.grades})
+   // this.state.filters.boroughs = criterias.boroughs
+   // this.state.filters.cuisineType = criterias.cuisineType
+   // this.state.filters.violationCode = criterias.violationCodes
+   // this.state.filters.grade = criterias.grades
+   console.log(this.state.filters)
  }
 
 boroughsChange = (value) =>{
@@ -73,11 +88,17 @@ criticalFlagChange = (value) => {
             lineHeight: '30px',
             color:'white'
           };
+      // const { error, Boroughs, cuisineType, violationCode, grade } = this.state;
       const { error } = this.state;
-      const Boroughs = ["All","Bronx" ,"Brooklyn"]
-      const cuisineType = ["All","American" ,"Pizza"]
-      const violationCode = ["08A", "47B"]
-      const grade = ["A", "B", "C", "D"]
+      const { Boroughs } = this.state.filters.boroughs
+      console.log(this.state.filters);
+      const { cuisineType } = this.state.filters.cuisineType
+      const { violationCode } = this.state.filters.violationCode
+      const { grade } = this.state.filters.grade
+      // const Boroughs = ["All","Bronx" ,"Brooklyn"]
+      // const cuisineType = ["All","American" ,"Pizza"]
+      // const violationCode = ["08A", "47B"]
+      // const grade = ["A", "B", "C", "D"]
       const marks = { 0: '0',200: '200'};
       return (
         <Layout className="App">
@@ -92,12 +113,16 @@ criticalFlagChange = (value) => {
             <Sider>
 
               <h3 className="filter">Filters</h3>
+
+
+
               <Select defaultValue="Boroughs" style={{ width: 120 }} onChange={this.boroughsChange}>
-              {Boroughs.map(res =>
+             {Boroughs.map(res =>
                 <Option value={res.toUpperCase()}>{res}</Option>
                 )
               }
               </Select>
+
 
               <Select defaultValue="Cuisine Type" style={{ width: 120 }} onChange={this.cuisineTypeChange}>
               {cuisineType.map(res =>
@@ -113,14 +138,13 @@ criticalFlagChange = (value) => {
               }
               </Select>
 
-
-
               <Select placeholder="Grade" mode="multiple" style={{ width: 120 }} onChange={this.gradeChange}>
               {grade.map(res =>
                 <Option value={res.toUpperCase()}>{res}</Option>
                 )
               }
               </Select>
+
 
               <div className="check">
 
