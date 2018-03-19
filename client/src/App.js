@@ -15,13 +15,18 @@ const Option = Select.Option;
 class App extends Component {
   constructor(props) {
     super(props)
-    this.state = {boroughs: ['All'],cuisineTypes: ['All'], violationCode:[], grade :[], loading: false, filters:{ borough:"", cuisineType:"", grade:[], violationCode:[],criticalFlag:false,score:{min:0,max:200}}}
+    this.state = {boroughs: ['All'],cuisineTypes: ['All'], violationCode:[], grade :[], loading: false, results:[], filters:{ borough:"", cuisineType:"", grade:[], violationCode:[],criticalFlag:false,score:{min:0,max:200}}}
   }
 
 async componentDidMount() {
    const response = await fetch('/criterias')
    const criterias = await response.json()
     this.setState({boroughs: criterias.boroughs, cuisineTypes: criterias.cuisineTypes, violationCode: criterias.violationCodes, grade: criterias.grades});
+ }
+
+
+ handleLoadingState = (loading) =>{
+   this.setState({loading:loading});
  }
 
 boroughsChange = (value) =>{
@@ -66,7 +71,25 @@ criticalFlagChange = (value) => {
 }
 
 getData = ()=>{
-  console.log( this.state.filters)
+  this.setState({loading:true})
+  fetch('/cities',{method :"POST",  headers: {
+    Accept: 'application/json',
+    'Content-Type': 'application/json',
+  },body:this.state.filters}).then(res =>{
+    if (res.ok) {
+         return res.json();
+       } else {
+         console.log("error")
+         throw new Error('Failed to load the Data');
+       }
+  }).then( data =>{
+     this.setState({
+     results:JSON.stringify(data),loading:false
+  }, this.handleLoadingState(false))
+
+  console.log(this.state.results)
+
+}).catch(err =>this.setState({ results:[] , error: err, loading:false}));
 
 }
     render() {

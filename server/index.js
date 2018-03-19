@@ -24,7 +24,10 @@ const status = {
   'notFound': 404
 };
 
-router.get('/cities', (req, res) => {
+router.post('/cities', (req, res) => {
+  console.log(req)
+  console.log(req.body)
+  console.log(req.query)
   console.log(`reading this from env > ${process.env.MY_VARIABLE}`)
   const cities = [
     {name: 'New York City', population: 8175133},
