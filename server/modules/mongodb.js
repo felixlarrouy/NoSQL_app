@@ -17,38 +17,42 @@ const findAllDocuments = function(db, callback) {
   });
 }
 
-const findDocumentsQuery = function(db, callback) {
+exports.findDocumentsQuery = function(callback) {
   //Simulate what i should receive
   var Dictionnary = {
     "restaurant.borough": "MANHATTAN",
     "restaurant.cuisineType": "Italian"
   };
+  mongodb.MongoClient.connect(url, function(err, client) {
+    if (err) reject(err);
+    console.log("Connected successfully to server");
+    const db = client.db('inspections_restaurant');
+    // Get the documents collection
+    const collection = db.collection('inspectionsRestaurant');
 
-  // Get the documents collection
-  const collection = db.collection('inspectionsRestaurant');
-
-  // Find some documents
-  collection.aggregate([{
-      $match: Dictionnary
-    },
-    //{$unwind : "$restaurant"},
-    {
-      $group: {
-        "_id": "$idRestaurant",
-        "Restaurant": {
-          $push: "$$ROOT"
+    // Find some documents
+    collection.aggregate([{
+        $match: Dictionnary
+      },
+      //{$unwind : "$restaurant"},
+      {
+        $group: {
+          "_id": "$idRestaurant",
+          "Restaurant": {
+            $push: "$$ROOT"
+          }
         }
-      }
-    },
-    //{$unwind : "$Restaurant"}
-  ]).each(function(err, docs) {
-    assert.equal(err, null);
-
-    //Retour à la ligne pour distinguer les differents groupes de restaurant
-    console.log("\n\n Found the following records");
-    console.log(docs);
-    callback(docs);
-  });
+      },
+      //{$unwind : "$Restaurant"}
+    ]).toArray(function(err, docs) {
+      assert.equal(err, null);
+      //Retour à la ligne pour distinguer les differents groupes de restaurant
+      //console.log("\n\n Found the following records");
+      console.log(docs);
+      return callback(null, docs)
+      client.close();
+    });
+  })
 }
 
 
@@ -74,30 +78,30 @@ exports.getDocuments = function() {
 exports.doRequest = function(type, query, projection, callback) {
   // Use connect method to connect to the server
   mongodb.MongoClient.connect(url, function(err, client) {
-      if (err) callback(err);
-      console.log("Connected successfully to server");
+    if (err) callback(err);
+    console.log("Connected successfully to server");
 
-      const db = client.db('inspections_restaurant');
-      const collection = db.collection('inspectionsRestaurant');
+    const db = client.db('inspections_restaurant');
+    const collection = db.collection('inspectionsRestaurant');
 
-      switch (type) {
-        case "find":
-          collection.find(JSON.parse(query), JSON.parse(projection)).toArray(function(err, docs) {
-            if (err) callback(err);
-            console.log("Found the following records");
-            console.log(docs)
-            callback(null, docs);
+    switch (type) {
+      case "find":
+        collection.find(JSON.parse(query), JSON.parse(projection)).toArray(function(err, docs) {
+          if (err) callback(err);
+          console.log("Found the following records");
+          console.log(docs)
+          callback(null, docs);
 
-          });
-          break;
-        case "aggregate":
-          collection.aggregate(JSON.parse(query)).toArray(function(error, docs) {
-            if (err) callback(error);
-            console.log("Found the following records");
-            console.log(docs)
-            callback(null,docs)
-          });
-          break;
+        });
+        break;
+      case "aggregate":
+        collection.aggregate(JSON.parse(query)).toArray(function(error, docs) {
+          if (err) callback(error);
+          console.log("Found the following records");
+          console.log(docs)
+          callback(null, docs)
+        });
+        break;
       case "distinct":
 
         collection.distinct(query, function(err, docs) {

@@ -47,6 +47,12 @@ router.get('/criterias', (req, res) => {
   })
 })
 
+router.get('/query', (req, res) => {
+  mongodb.findDocumentsQuery((err, results) => {
+    res.json(results);
+  })
+})
+
 router.get('/dev/:type/:query/:projection', (req, res) => {
   if (!req.params.type || !req.params.query || !req.params.projection) {
       res.status(status.badRequest).send({
