@@ -66,12 +66,16 @@ body {
 
 .ant-spin {
   padding-top: 2%;
-  color: rgb(147, 45, 36);
+  color: rgb(13, 77, 115);
   font-weight: 500;
 }
 
 .ant-spin-dot i {
-  background-color: rgb(147, 45, 36);
+  background-color:rgb(13, 77, 115);
+}
+
+.ant-spin-spinning {
+      display: block;
 }
 
 /* Header */
