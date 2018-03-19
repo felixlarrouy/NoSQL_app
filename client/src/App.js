@@ -15,10 +15,10 @@ const Option = Select.Option;
 class App extends Component {
   constructor(props) {
     super(props)
-    this.state = {boroughs: ['All'],cuisineTypes: ['All'], violationCode:[], grade :[] , score:{min:0,max:200}, criticalFlag:false,loading: false}
+    this.state = {boroughs: ['All'],cuisineTypes: ['All'], violationCode:[], grade :[], loading: false, filters:{ borough:"", cuisineType:"", grade:[], violationCode:[],criticalFlag:false,score:{min:0,max:200}}}
   }
 
- async componentDidMount() {
+async componentDidMount() {
    const response = await fetch('/criterias')
    const criterias = await response.json()
     this.setState({boroughs: criterias.boroughs, cuisineTypes: criterias.cuisineTypes, violationCode: criterias.violationCodes, grade: criterias.grades});
@@ -26,43 +26,48 @@ class App extends Component {
 
 boroughsChange = (value) =>{
   if(value==="ALL"){
-     this.state.filters.boroughs=""
+     this.state.filters.borough=""
    }
   else{
-    this.state.filters.boroughs=value
+    this.state.filters.borough=value
   }
-  console.log(this.state);
+  this.getData()
 }
 
 cuisineTypeChange = (value) => {
   if(value==="ALL"){
-     this.state.filters.cuisineTypes=""
+     this.state.filters.cuisineType=""
    }
   else{
-    this.state.filters.cuisineTypes=value
+    this.state.filters.cuisineType=value
   }
-  console.log(this.state);
+  this.getData()
 }
 
 violationCodeChange = (value) => {
   this.state.filters.violationCode= value
-  console.log(this.state);
+  this.getData()
 }
 
 gradeChange = (value) => {
   this.state.filters.grade= value
-  console.log(this.state);
+  this.getData()
 }
 
 scoreChange = (value) => {
  this.state.filters.score.min = value[0]
  this.state.filters.score.max = value[1]
- console.log(this.state);
+ this.getData()
 }
 
 criticalFlagChange = (value) => {
  this.state.filters.criticalFlag=value
- console.log(this.state);
+ this.getData()
+}
+
+getData = ()=>{
+  console.log( this.state.filters)
+
 }
     render() {
       const radioStyle = {
@@ -72,6 +77,7 @@ criticalFlagChange = (value) => {
             color:'white'
           };
       const {error, boroughs,  cuisineTypes, violationCode, grade} = this.state;
+
       const marks = { 0: '0',200: '200'};
       return (
         <Layout className="App">
