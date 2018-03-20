@@ -17,7 +17,7 @@ const findAllDocuments = function(db, callback) {
   });
 }
 
-exports.findDocumentsQuery = function(callback) {
+exports.findDocumentsQuery = function(criterias,callback) {
   //Simulate what i should receive
   var criterias = {
     "criticalFlag": "Not Critical",
