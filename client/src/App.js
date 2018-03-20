@@ -15,7 +15,11 @@ const Option = Select.Option;
 class App extends Component {
   constructor(props) {
     super(props)
+<<<<<<< HEAD
     this.state = {boroughs: ['All'],cuisineTypes: ['All'], violationCode:[], grade :[], loading: false, results:[], filters:{ borough:"", cuisineType:"", grade:[], violationCode:[],criticalFlag:false,score:{min:0,max:200}}}
+=======
+    this.state = {boroughs: ['All'],cuisineTypes: ['All'], violationCode:[], grade :[], loading: false, filters:{ restaurant: {borough:"", cuisineType:""} , grade:[], violationCode:[],criticalFlag:false,score:{min:0,max:160}}}
+>>>>>>> 26902c996a3232b4e619ed4752b90ef21ab28f6a
   }
 
 async componentDidMount() {
@@ -31,20 +35,20 @@ async componentDidMount() {
 
 boroughsChange = (value) =>{
   if(value==="ALL"){
-     this.state.filters.borough=""
+     this.state.filters.restaurant.borough=""
    }
   else{
-    this.state.filters.borough=value
+    this.state.filters.restaurant.borough=value
   }
   this.getData()
 }
 
 cuisineTypeChange = (value) => {
   if(value==="ALL"){
-     this.state.filters.cuisineType=""
+     this.state.filters.restaurant.cuisineType=""
    }
   else{
-    this.state.filters.cuisineType=value
+    this.state.filters.restaurant.cuisineType=value
   }
   this.getData()
 }
@@ -101,7 +105,7 @@ getData = ()=>{
           };
       const {error, boroughs,  cuisineTypes, violationCode, grade} = this.state;
 
-      const marks = { 0: '0',200: '200'};
+      const marks = { 0: '0',160: '160'};
       return (
         <Layout className="App">
           <Header className="header">
@@ -126,7 +130,7 @@ getData = ()=>{
 
               <Select defaultValue="Cuisine Type" style={{ width: 120 }} onChange={this.cuisineTypeChange}>
               {cuisineTypes.map(res =>
-                <Option value={res.toUpperCase()}>{res}</Option>
+                <Option value={res}>{res}</Option>
                 )
               }
               </Select>
@@ -149,7 +153,7 @@ getData = ()=>{
 
                 <div>
                 <p>Score :</p>
-                <Slider range defaultValue={[0, 200]} marks={marks} min={0} max={200} onChange={this.scoreChange}/>
+                <Slider range defaultValue={[0, 160]} marks={marks} min={0} max={160} onChange={this.scoreChange}/>
                   <p>Critical Flag : </p>
                   <Switch checkedChildren={<Icon type="check" />}  unCheckedChildren={<Icon type="cross" />}  onChange={this.criticalFlagChange} />
                 </div>
