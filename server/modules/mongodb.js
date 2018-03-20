@@ -19,10 +19,59 @@ const findAllDocuments = function(db, callback) {
 
 exports.findDocumentsQuery = function(callback) {
   //Simulate what i should receive
-  var Dictionnary = {
-    "restaurant.borough": "MANHATTAN",
-    "restaurant.cuisineType": "Italian"
+  var criterias = {
+    "criticalFlag": "Not Critical",
+    "grade": ["A", "B"],
+    "restaurant": {
+      "borough": "MANHATTAN",
+      "cuisineType": "Chinese"
+    },
+    "score": {
+      "min": 0,
+      "max": 160
+    },
+    "violationCode": []
   };
+
+  var matchDict = {}
+
+  Object.keys(criterias).forEach(function(element, key, _array) {
+    if(element == 'criticalFlag') {
+      matchDict.criticalFlag = criterias[element]
+    }
+
+    if(element == 'score') {
+      matchDict.score = {}
+      matchDict.score.$gte = criterias.score.min
+      matchDict.score.$lte = criterias.score.max
+    }
+
+    if(element == 'grade') {
+      if(criterias.grade.length > 0) {
+        matchDict.grade = {}
+        matchDict.grade.$in = criterias.grade
+      }
+    }
+
+    if(element == 'violationCode') {
+      if(criterias.violationCode.length > 0) {
+        matchDict.violationCode = {}
+        matchDict.violationCode.$in = criterias.violationCode
+      }
+    }
+
+    if(element == 'restaurant') {
+      if(criterias.restaurant.borough != "") {
+        matchDict["restaurant.borough"] = criterias.restaurant.borough
+      }
+      if(criterias.restaurant.cuisineType != "") {
+        matchDict["restaurant.cuisineType"] = criterias.restaurant.cuisineType
+      }
+    }
+  })
+
+  console.log(matchDict);
+
   mongodb.MongoClient.connect(url, function(err, client) {
     if (err) reject(err);
     console.log("Connected successfully to server");
@@ -32,7 +81,7 @@ exports.findDocumentsQuery = function(callback) {
 
     // Find some documents
     collection.aggregate([{
-        $match: Dictionnary
+        $match: matchDict
       },
       //{$unwind : "$restaurant"},
       {
@@ -42,13 +91,13 @@ exports.findDocumentsQuery = function(callback) {
             $push: "$$ROOT"
           }
         }
-      },
+      }
       //{$unwind : "$Restaurant"}
     ]).toArray(function(err, docs) {
       assert.equal(err, null);
       //Retour à la ligne pour distinguer les differents groupes de restaurant
       //console.log("\n\n Found the following records");
-      console.log(docs);
+      //console.log(docs);
       return callback(null, docs)
       client.close();
     });
