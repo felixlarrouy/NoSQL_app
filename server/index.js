@@ -25,9 +25,7 @@ const status = {
 };
 
 router.post('/cities', (req, res) => {
-  console.log(req)
   console.log(req.body)
-  console.log(req.query)
   console.log(`reading this from env > ${process.env.MY_VARIABLE}`)
   const cities = [
     {name: 'New York City', population: 8175133},
@@ -50,8 +48,9 @@ router.get('/criterias', (req, res) => {
   })
 })
 
-router.get('/query', (req, res) => {
-  mongodb.findDocumentsQuery((err, results) => {
+router.post('/query', (req, res) => {
+  console.log("Body :" +JSON.stringify(req.body))
+  mongodb.findDocumentsQuery(req.body,(err, results) => {
     res.json(results);
   })
 })
