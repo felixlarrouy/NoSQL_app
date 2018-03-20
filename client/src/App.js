@@ -72,10 +72,11 @@ criticalFlagChange = (value) => {
 
 getData = ()=>{
   this.setState({loading:true})
+  console.log(this.state.filters)
   fetch('/query',{method :"POST",  headers: {
     Accept: 'application/json',
     'Content-Type': 'application/json',
-  },body:this.state.filters}).then(res =>{
+  },body:JSON.stringify(this.state.filters)}).then(res =>{
     if (res.ok) {
          return res.json();
        } else {

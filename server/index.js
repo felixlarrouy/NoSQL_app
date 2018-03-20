@@ -49,7 +49,6 @@ router.get('/criterias', (req, res) => {
 })
 
 router.post('/query', (req, res) => {
-  console.log(req)
   console.log("Body :" +JSON.stringify(req.body))
   mongodb.findDocumentsQuery(req.body,(err, results) => {
     res.json(results);

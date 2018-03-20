@@ -19,48 +19,48 @@ const findAllDocuments = function(db, callback) {
 
 exports.findDocumentsQuery = function(criterias,callback) {
   //Simulate what i should receive
-  var criterias = {
-    "criticalFlag": "Not Critical",
-    "grade": ["A", "B"],
-    "restaurant": {
-      "borough": "MANHATTAN",
-      "cuisineType": "Chinese"
-    },
-    "score": {
-      "min": 0,
-      "max": 160
-    },
-    "violationCode": []
-  };
+  // criterias = {
+  //   "criticalFlag": "Not Critical",
+  //   "grade": ["A", "B"],
+  //   "restaurant": {
+  //     "borough": "MANHATTAN",
+  //     "cuisineType": "Chinese"
+  //   },
+  //   "score": {
+  //     "min": 0,
+  //     "max": 160
+  //   },
+  //   "violationCode": []
+  // };
 
   var matchDict = {}
 
   Object.keys(criterias).forEach(function(element, key, _array) {
-    if(element == 'criticalFlag') {
-      matchDict.criticalFlag = criterias[element]
+    if(element === 'criticalFlag' && element) {
+      matchDict.criticalFlag = "Critical"
     }
 
-    if(element == 'score') {
+    if(element === 'score') {
       matchDict.score = {}
       matchDict.score.$gte = criterias.score.min
       matchDict.score.$lte = criterias.score.max
     }
 
-    if(element == 'grade') {
+    if(element === 'grade') {
       if(criterias.grade.length > 0) {
         matchDict.grade = {}
         matchDict.grade.$in = criterias.grade
       }
     }
 
-    if(element == 'violationCode') {
+    if(element === 'violationCode') {
       if(criterias.violationCode.length > 0) {
         matchDict.violationCode = {}
         matchDict.violationCode.$in = criterias.violationCode
       }
     }
 
-    if(element == 'restaurant') {
+    if(element === 'restaurant') {
       if(criterias.restaurant.borough != "") {
         matchDict["restaurant.borough"] = criterias.restaurant.borough
       }
