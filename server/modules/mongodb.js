@@ -36,7 +36,7 @@ exports.findDocumentsQuery = function(criterias,callback) {
   var matchDict = {}
 
   Object.keys(criterias).forEach(function(element, key, _array) {
-    if(element === 'criticalFlag' && element) {
+    if(element === 'criticalFlag' && criterias[element]) {
       matchDict.criticalFlag = "Critical"
     }
 
