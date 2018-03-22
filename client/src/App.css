@@ -252,7 +252,30 @@ textarea{
       color: #000;
 }
 
+.jsonOdd {
+  background: #dbdbdb;
+}
 
+.content{
+  color: #000;
+}
+
+.tableHead{
+  text-transform: uppercase;
+}
+
+table {
+  border-spacing: 8;
+  text-align: center;
+}
+th{
+  color:white;
+    padding: 14px 5px;
+    background: #246993;
+}
+td {
+  padding: 14px 5px;
+}
 /* Footer */
 
 .footer {
