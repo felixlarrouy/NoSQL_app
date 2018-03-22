@@ -14,8 +14,8 @@ const Option = Select.Option;
 class App extends Component {
   constructor(props) {
     super(props)
-        this.state = {boroughs: ['All'],cuisineTypes: ['All'], violationCode:[], grade :[], loading: false, filters:{ restaurant: {borough:"", cuisineType:""} , grade:[], violationCode:[],criticalFlag:false,score:{min:0,max:160}}}
-    }
+        this.state = {boroughs: ['All'],cuisineTypes: ['All'], violationCode:[], grade :[], loading: false, results:[],filters:{ restaurant: {borough:"", cuisineType:""} , grade:[], violationCode:[],criticalFlag:false,score:{min:0,max:160}}}
+  }
 
 async componentDidMount() {
    const response = await fetch('/criterias')
@@ -84,7 +84,7 @@ getData = ()=>{
        }
   }).then( data =>{
      this.setState({
-       results:JSON.stringify(data),loading:false
+       results:data,loading:false
   }, this.handleLoadingState(false))
 
   console.log(this.state.results)
@@ -162,11 +162,9 @@ getData = ()=>{
 
             {error ? <div><h3>Something went wrong .. </h3><span>Error : Failed to load Data</span></div>: <div></div>}
               {this.state.loading ? <Loading message="Working on it ..."/> :
-                <Row gutter={48} type="flex" justify="space-around" align="center">
-
-                </Row>
+              <div></div>
               }
-              {this.state.results ? <JsonTable id="json-table" rows = {this.state.results} /> : <div></div> }
+              {this.state.results.length>0 ? <JsonTable id="json-table" rows = {this.state.results} />: <div></div> }
             </Content>
           </Layout>
           <Footer className="footer">
