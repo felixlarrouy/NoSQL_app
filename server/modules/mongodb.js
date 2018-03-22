@@ -86,10 +86,10 @@ exports.findDocumentsQuery = function(criterias,callback) {
       //{$unwind : "$restaurant"},
       {
         $group: {
-          "_id": "$idRestaurant",
-          "Restaurant": {
-            $push: "$$ROOT"
-          }
+          "_id": "$restaurant"
+          // "Restaurant": {
+          //   $push: "$$ROOT"
+          // }
         }
       }
       //{$unwind : "$Restaurant"}
@@ -98,7 +98,11 @@ exports.findDocumentsQuery = function(criterias,callback) {
       //Retour à la ligne pour distinguer les differents groupes de restaurant
       //console.log("\n\n Found the following records");
       //console.log(docs);
-      return callback(null, docs)
+      var newDocs = []
+      for (var i = 0; i < docs.length; i++) {
+        newDocs.push(docs[i]._id)
+      }
+      return callback(null, newDocs)
       client.close();
     });
   })

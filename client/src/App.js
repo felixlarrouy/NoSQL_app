@@ -5,11 +5,10 @@ import { Layout, Row, Select,  Slider, Radio,Switch, Icon, Button} from 'antd';
 import Loading from './components/loading';
 import {Link} from "react-router-dom";
 const { Header, Footer, Sider, Content } = Layout;
-
+const JsonTable = require('ts-react-json-table');
 
 const RadioGroup = Radio.Group;
 const Option = Select.Option;
-
 
 
 class App extends Component {
@@ -85,7 +84,7 @@ getData = ()=>{
        }
   }).then( data =>{
      this.setState({
-     results:JSON.stringify(data),loading:false
+       results:JSON.stringify(data),loading:false
   }, this.handleLoadingState(false))
 
   console.log(this.state.results)
@@ -93,6 +92,7 @@ getData = ()=>{
 }).catch(err =>this.setState({ results:[] , error: err, loading:false}));
 
 }
+
     render() {
       const radioStyle = {
             display: 'block',
@@ -166,6 +166,7 @@ getData = ()=>{
 
                 </Row>
               }
+              {this.state.results ? <JsonTable id="json-table" rows = {this.state.results} /> : <div></div> }
             </Content>
           </Layout>
           <Footer className="footer">
