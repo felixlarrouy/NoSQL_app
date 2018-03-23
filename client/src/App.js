@@ -93,6 +93,10 @@ getData = ()=>{
 
 }
 
+showInspection = (restaurantId) => {
+  
+}
+
     render() {
       const radioStyle = {
             display: 'block',

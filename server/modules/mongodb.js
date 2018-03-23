@@ -18,20 +18,6 @@ const findAllDocuments = function(db, callback) {
 }
 
 exports.findDocumentsQuery = function(criterias, callback) {
-  //Simulate what i should receive
-  // criterias = {
-  //   "criticalFlag": "Not Critical",
-  //   "grade": ["A", "B"],
-  //   "restaurant": {
-  //     "borough": "MANHATTAN",
-  //     "cuisineType": "Chinese"
-  //   },
-  //   "score": {
-  //     "min": 0,
-  //     "max": 160
-  //   },
-  //   "violationCode": []
-  // };
 
   var matchDict = {}
 
@@ -114,7 +100,31 @@ exports.findDocumentsQuery = function(criterias, callback) {
   })
 }
 
+exports.findInspections = function() {
+  mongodb.MongoClient.connect(url, function(err, client) {
+    if (err) reject(err);
+    console.log("Connected successfully to server");
+    const db = client.db('inspections_restaurant');
+    // Get the documents collection
+    const collection = db.collection('inspectionsRestaurant');
 
+    // Find some documents
+    collection.find([{
+      {
+        "idRestaurant": 50054268
+      },
+      {
+        "restaurant": 0,
+        "_id": 0,
+        "idRestaurant": 0
+      }
+    }]).toArray(function(err, docs) {
+      assert.equal(err, null);
+      return callback(null, newDocs)
+      client.close();
+    });
+  })
+}
 
 exports.getDocuments = function() {
   return new Promise(function(resolve, reject) {
