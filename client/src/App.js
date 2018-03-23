@@ -102,7 +102,14 @@ getData = ()=>{
           };
       const {error, boroughs,  cuisineTypes, violationCode, grade} = this.state;
 
-      const marks = { 0: '0',160: '160'};
+      const marks = {
+        0: '0',
+        40: '40',
+        80: '80',
+        120: '120',
+        160: '160'
+      }
+
       return (
         <Layout className="App">
           <Header className="header">
@@ -150,7 +157,7 @@ getData = ()=>{
 
                 <div>
                 <p>Score :</p>
-                <Slider range defaultValue={[0, 160]} marks={marks} min={0} max={160} onChange={this.scoreChange}/>
+                <Slider range defaultValue={[0, 160]} marks={marks} step={null} min={0} max={160} onChange={this.scoreChange}/>
                   <p>Critical Flag : </p>
                   <Switch checkedChildren={<Icon type="check" />}  unCheckedChildren={<Icon type="cross" />}  onChange={this.criticalFlagChange} />
                 </div>
