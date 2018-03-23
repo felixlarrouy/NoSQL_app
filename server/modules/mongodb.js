@@ -17,7 +17,7 @@ const findAllDocuments = function(db, callback) {
   });
 }
 
-exports.findDocumentsQuery = function(criterias,callback) {
+exports.findDocumentsQuery = function(criterias, callback) {
   //Simulate what i should receive
   // criterias = {
   //   "criticalFlag": "Not Critical",
@@ -36,35 +36,35 @@ exports.findDocumentsQuery = function(criterias,callback) {
   var matchDict = {}
 
   Object.keys(criterias).forEach(function(element, key, _array) {
-    if(element === 'criticalFlag' && criterias[element]) {
+    if (element === 'criticalFlag' && criterias[element]) {
       matchDict.criticalFlag = "Critical"
     }
 
-    if(element === 'score') {
+    if (element === 'score') {
       matchDict.score = {}
       matchDict.score.$gte = criterias.score.min
       matchDict.score.$lte = criterias.score.max
     }
 
-    if(element === 'grade') {
-      if(criterias.grade.length > 0) {
+    if (element === 'grade') {
+      if (criterias.grade.length > 0) {
         matchDict.grade = {}
         matchDict.grade.$in = criterias.grade
       }
     }
 
-    if(element === 'violationCode') {
-      if(criterias.violationCode.length > 0) {
+    if (element === 'violationCode') {
+      if (criterias.violationCode.length > 0) {
         matchDict.violationCode = {}
         matchDict.violationCode.$in = criterias.violationCode
       }
     }
 
-    if(element === 'restaurant') {
-      if(criterias.restaurant.borough != "") {
+    if (element === 'restaurant') {
+      if (criterias.restaurant.borough != "") {
         matchDict["restaurant.borough"] = criterias.restaurant.borough
       }
-      if(criterias.restaurant.cuisineType != "") {
+      if (criterias.restaurant.cuisineType != "") {
         matchDict["restaurant.cuisineType"] = criterias.restaurant.cuisineType
       }
     }
@@ -86,7 +86,10 @@ exports.findDocumentsQuery = function(criterias,callback) {
       //{$unwind : "$restaurant"},
       {
         $group: {
-          "_id": "$restaurant"
+          "_id": {
+            id: "$idRestaurant",
+            restaurant: "$restaurant"
+          }
           // "Restaurant": {
           //   $push: "$$ROOT"
           // }
@@ -100,7 +103,10 @@ exports.findDocumentsQuery = function(criterias,callback) {
       //console.log(docs);
       var newDocs = []
       for (var i = 0; i < docs.length; i++) {
-        newDocs.push(docs[i]._id)
+        var newDoc = {}
+        newDoc.restaurant = docs[i]._id.restaurant
+        newDoc.restaurant.id = docs[i]._id.id
+        newDocs.push(newDoc.restaurant)
       }
       return callback(null, newDocs)
       client.close();

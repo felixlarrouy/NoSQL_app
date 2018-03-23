@@ -164,7 +164,7 @@ getData = ()=>{
               {this.state.loading ? <Loading message="Working on it ..."/> :
               <div></div>
               }
-              {this.state.results.length>0 ? <JsonTable id="json-table" rows = {this.state.results}  theadClassName="tableHead"   TableSettings=""/>: <div></div> }
+              {this.state.results.length>0 ? <JsonTable id="json-table" rows = {this.state.results} theadClassName="tableHead" excludeColumns={["id"]}  TableSettings=""/>: <div></div> }
             </Content>
           </Layout>
           <Footer className="footer">
