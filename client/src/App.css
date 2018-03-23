@@ -267,6 +267,7 @@ textarea{
 table {
   border-spacing: 8;
   text-align: center;
+  width: 100%;
 }
 th{
   color:white;
