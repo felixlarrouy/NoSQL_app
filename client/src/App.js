@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
-import { Layout, Row, Select,  Slider, Radio,Switch, Icon, Button} from 'antd';
+import { Layout, Row, Select,  Slider, Radio,Switch, Icon, Button, Modal} from 'antd';
 import Loading from './components/loading';
 import {Link} from "react-router-dom";
 const { Header, Footer, Sider, Content } = Layout;
@@ -16,7 +16,7 @@ class App extends Component {
     super(props)
         this.state = {boroughs: ['All'], cuisineTypes: ['All'], violationCode:[], grade :[], loading: false, results:[],
         filters:{ restaurant: {borough:"", cuisineType:""} , grade:[], violationCode:[], criticalFlag:false, score:{min:0,max:160}},
-        resInspections:{}
+        resInspections:[],modal:false,loadingModal:false
       }
   }
 
@@ -74,7 +74,6 @@ criticalFlagChange = (value) => {
 
 getData = ()=>{
   this.setState({loading:true})
-  console.log(this.state.filters)
   fetch('/query',{method :"POST",  headers: {
     Accept: 'application/json',
     'Content-Type': 'application/json',
@@ -82,23 +81,23 @@ getData = ()=>{
     if (res.ok) {
          return res.json();
        } else {
-         console.log("error")
          throw new Error('Failed to load the Data');
        }
   }).then( data =>{
      this.setState({
        results:data,loading:false
   }, this.handleLoadingState(false))
-
-  console.log(this.state.results)
-
 }).catch(err =>this.setState({ results:[] , error: err, loading:false}));
-
 }
 
 onClickRow = (e, item ) => {
-  console.log(item.id);
+  this.setState({
+    modal:true,
+    loadingModal:true
+  })
   this.getInspections(item.id);
+
+
 }
 
 getInspections = (id) => {
@@ -106,14 +105,25 @@ getInspections = (id) => {
     if (res.ok) {
       return res.json();
     } else {
-      console.log("error");
       throw new Error('Failed to load the Data');
     }
   }).then(data => {
-    this.setState({resInspections:data})
-    console.log(this.state.resInspections);
-  }).catch(err => this.setState({resInspections:{}}))
+    this.setState({
+      resInspections: data,
+      loadingModal:false
+    });
+
+
+  }).catch(err =>{
+     this.setState({resInspections:[]})
+   })
 }
+
+ handleOk = (e) => {
+   this.setState({
+     modal: false,
+   });
+ }
 
     render() {
       const radioStyle = {
@@ -122,7 +132,7 @@ getInspections = (id) => {
             lineHeight: '30px',
             color:'white'
           };
-      const {error, boroughs,  cuisineTypes, violationCode, grade} = this.state;
+      const {error, boroughs,  cuisineTypes, violationCode, grade, resInspections} = this.state;
 
       const marks = {
         0: '0',
@@ -193,7 +203,25 @@ getInspections = (id) => {
               {this.state.loading ? <Loading message="Working on it ..."/> :
               <div></div>
               }
+
+
+
               {this.state.results.length>0 ? <JsonTable id="json-table" rows={this.state.results} onClickRow={this.onClickRow} theadClassName="tableHead" excludeColumns={["id"]} TableSettings=""/>: <div></div> }
+
+              <div>
+                <Modal
+                  title="Inspections"
+                  visible={this.state.modal}
+                  onOk={this.handleOk}
+                >
+                {this.state.loadingModal ? <Loading message="Working on it ..."/> :
+                <div></div>
+                }
+                <JsonTable id="json-table" rows={this.state.resInspections} theadClassName="tableHead" excludeColumns={["id"]} TableSettings=""/>
+
+
+                </Modal>
+              </div>
             </Content>
           </Layout>
           <Footer className="footer">

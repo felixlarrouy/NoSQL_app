@@ -276,6 +276,15 @@ th{
 }
 td {
   padding: 14px 5px;
+  cursor: pointer;
+}
+
+.ant-modal{
+  width:80% !important;
+}
+
+.ant-modal-body th{
+  background: #900800 !important;
 }
 /* Footer */
 
