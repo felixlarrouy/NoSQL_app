@@ -37,6 +37,8 @@ You can select filters on the left side to display the corresponding restaurants
 
 When the table of restaurants is displayed, you can click on a restaurant (i.e row of the restaurant) to display all the inspections of this restaurant.
 
+![main-page-inspections](./img/main-page-inspections.png)
+
 ### Developer mode
 
 You can choose which type of query you want to run :
