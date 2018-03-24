@@ -108,9 +108,10 @@ exports.findInspections = function(id, callback) {
     // Get the documents collection
     const collection = db.collection('inspectionsRestaurant');
     // Find some documents
+    console.log(typeof id)
     collection.aggregate([{
         $match: {
-          "idRestaurant": id
+          "idRestaurant": parseInt(id)
         }
       },
       {
