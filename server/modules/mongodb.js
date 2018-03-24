@@ -100,28 +100,30 @@ exports.findDocumentsQuery = function(criterias, callback) {
   })
 }
 
-exports.findInspections = function() {
+exports.findInspections = function(id, callback) {
   mongodb.MongoClient.connect(url, function(err, client) {
     if (err) reject(err);
     console.log("Connected successfully to server");
     const db = client.db('inspections_restaurant');
     // Get the documents collection
     const collection = db.collection('inspectionsRestaurant');
-
     // Find some documents
-    collection.find([{
-      {
-        "idRestaurant": 50054268
+    collection.aggregate([{
+        $match: {
+          "idRestaurant": id
+        }
       },
       {
-        "restaurant": 0,
-        "_id": 0,
-        "idRestaurant": 0
+        $project: {
+          "restaurant": 0,
+          "_id": 0,
+          "idRestaurant": 0
+        }
       }
-    }]).toArray(function(err, docs) {
+    ]).toArray(function(err, docs) {
       assert.equal(err, null);
-      return callback(null, newDocs)
-      client.close();
+      console.log(docs);
+      return callback(null, docs)
     });
   })
 }
@@ -164,6 +166,7 @@ exports.doRequest = function(type, query, projection, callback) {
         });
         break;
       case "aggregate":
+        console.log(query);
         collection.aggregate(JSON.parse(query)).toArray(function(error, docs) {
           if (err) callback(error);
           console.log("Found the following records");

@@ -7,7 +7,9 @@ const mongodb = require('./modules/mongodb')
 
 
 app.use(bodyParser.json())
-app.use(bodyParser.urlencoded({extended: false}))
+app.use(bodyParser.urlencoded({
+  extended: false
+}))
 
 const router = express.Router()
 
@@ -27,16 +29,24 @@ const status = {
 router.post('/cities', (req, res) => {
   console.log(req.body)
   console.log(`reading this from env > ${process.env.MY_VARIABLE}`)
-  const cities = [
-    {name: 'New York City', population: 8175133},
-    {name: 'Los Angeles',   population: 3792621},
-    {name: 'Chicago',       population: 2695598}
+  const cities = [{
+      name: 'New York City',
+      population: 8175133
+    },
+    {
+      name: 'Los Angeles',
+      population: 3792621
+    },
+    {
+      name: 'Chicago',
+      population: 2695598
+    }
   ]
   res.json(cities)
 })
 
 router.get('/locations', (req, res) => {
-  locations.getLocations((err,locations) => {
+  locations.getLocations((err, locations) => {
     console.log(locations.length)
     res.json(locations)
   })
@@ -48,20 +58,38 @@ router.get('/criterias', (req, res) => {
   })
 })
 
+router.get('/inspections/:id', (req, res) => {
+  if (!req.params.id) {
+    res.status(status.badRequest).send({
+      'error': 'Wrong params request'
+    });
+  }
+  mongodb.findInspections(req.params.id, (err, inspections) => {
+    if (err) {
+      res.status(status.badRequest).send({
+        'error': err.message
+      });
+    } else {
+      res.status(status.ok).send(inspections);
+    }
+    res.end();
+  });
+})
+
 router.post('/query', (req, res) => {
-  console.log("Body :" +JSON.stringify(req.body))
-  mongodb.findDocumentsQuery(req.body,(err, results) => {
+  console.log("Body :" + JSON.stringify(req.body))
+  mongodb.findDocumentsQuery(req.body, (err, results) => {
     res.json(results);
   })
 })
 
 router.get('/dev/:type/:query/:projection', (req, res) => {
   if (!req.params.type || !req.params.query || !req.params.projection) {
-      res.status(status.badRequest).send({
+    res.status(status.badRequest).send({
       'error': 'Wrong params request'
     });
   }
-  mongodb.doRequest(req.params.type,req.params.query, req.params.projection, (err, data) => {
+  mongodb.doRequest(req.params.type, req.params.query, req.params.projection, (err, data) => {
     if (err) {
       res.status(status.badRequest).send({
         'error': err.message

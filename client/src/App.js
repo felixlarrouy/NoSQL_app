@@ -14,7 +14,10 @@ const Option = Select.Option;
 class App extends Component {
   constructor(props) {
     super(props)
-        this.state = {boroughs: ['All'],cuisineTypes: ['All'], violationCode:[], grade :[], loading: false, results:[],filters:{ restaurant: {borough:"", cuisineType:""} , grade:[], violationCode:[],criticalFlag:false,score:{min:0,max:160}}}
+        this.state = {boroughs: ['All'], cuisineTypes: ['All'], violationCode:[], grade :[], loading: false, results:[],
+        filters:{ restaurant: {borough:"", cuisineType:""} , grade:[], violationCode:[], criticalFlag:false, score:{min:0,max:160}},
+        resInspections:{}
+      }
   }
 
 async componentDidMount() {
@@ -93,8 +96,23 @@ getData = ()=>{
 
 }
 
-showInspection = (restaurantId) => {
-  
+onClickRow = (e, item ) => {
+  console.log(item.id);
+  this.getInspections(item.id);
+}
+
+getInspections = (id) => {
+  fetch('/inspections/' + id, {mode: 'no-cors'}).then(res => {
+    if (res.ok) {
+      return res.json();
+    } else {
+      console.log("error");
+      throw new Error('Failed to load the Data');
+    }
+  }).then(data => {
+    this.setState({resInspections:data})
+    console.log(this.state.resInspections);
+  }).catch(err => this.setState({resInspections:{}}))
 }
 
     render() {
@@ -175,7 +193,7 @@ showInspection = (restaurantId) => {
               {this.state.loading ? <Loading message="Working on it ..."/> :
               <div></div>
               }
-              {this.state.results.length>0 ? <JsonTable id="json-table" rows = {this.state.results} theadClassName="tableHead" excludeColumns={["id"]}  TableSettings=""/>: <div></div> }
+              {this.state.results.length>0 ? <JsonTable id="json-table" rows={this.state.results} onClickRow={this.onClickRow} theadClassName="tableHead" excludeColumns={["id"]} TableSettings=""/>: <div></div> }
             </Content>
           </Layout>
           <Footer className="footer">
