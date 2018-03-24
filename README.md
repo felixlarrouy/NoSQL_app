@@ -4,6 +4,10 @@
 
 We have a dataset comprised of inspections of NYC restaurants. This WebApp allows you to find restaurants and their inspections based on some criteria such as the borough, the grade, the inspection code...
 
+You can access the WebApp via the following link : [https://nyrestaurants.herokuapp.com/](https://nyrestaurants.herokuapp.com/)
+
+Skip to the usage section in you don't want to install the application on your computer. Otherwise, follow the instructions in the installation section.
+
 ## Installation
 
 If you don't have Node.js installed on your computer, you can download it [here](https://nodejs.org/en/).
