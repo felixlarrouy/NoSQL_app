@@ -213,14 +213,18 @@ getInspections = (id) => {
                   title="Inspections"
                   visible={this.state.modal}
                   onOk={this.handleOk}
+                  footer={[
+                    <Button key="submit" type="primary" onClick={this.handleOk}>
+                      Ok
+                      </Button>
+                    ]}
                 >
                 {this.state.loadingModal ? <Loading message="Working on it ..."/> :
                 <div></div>
                 }
                 <JsonTable id="json-table" rows={this.state.resInspections} theadClassName="tableHead" excludeColumns={["id"]} TableSettings=""/>
-
-
                 </Modal>
+
               </div>
             </Content>
           </Layout>
