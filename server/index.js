@@ -26,32 +26,6 @@ const status = {
   'notFound': 404
 };
 
-router.post('/cities', (req, res) => {
-  console.log(req.body)
-  console.log(`reading this from env > ${process.env.MY_VARIABLE}`)
-  const cities = [{
-      name: 'New York City',
-      population: 8175133
-    },
-    {
-      name: 'Los Angeles',
-      population: 3792621
-    },
-    {
-      name: 'Chicago',
-      population: 2695598
-    }
-  ]
-  res.json(cities)
-})
-
-router.get('/locations', (req, res) => {
-  locations.getLocations((err, locations) => {
-    console.log(locations.length)
-    res.json(locations)
-  })
-})
-
 router.get('/connect', (req, res) => {
   mongodb.connect(function() {
     console.log("Connected to the database");

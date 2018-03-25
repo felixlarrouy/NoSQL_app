@@ -120,7 +120,7 @@ getInspections = (id) => {
 
  connect = () => {
    this.handleLoadingState(true)
-  fetch('/criterias').then(res =>{
+  fetch('/connect').then(res =>{
     if (res.ok) {
          return res.json();
        } else {

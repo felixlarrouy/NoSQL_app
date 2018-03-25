@@ -4,7 +4,16 @@ const assert = require('assert');
 // Connection URL
 const url = 'mongodb://nosql_app:p4ssword@ds113849.mlab.com:13849/inspections_restaurant';
 var mongoClient = mongodb.MongoClient;
-var db;
+let db;
+
+
+exports.connect = function(callback) {
+  mongoClient.connect(url, function(err, database) {
+    if (err) throw err;
+    db = database.db('inspections_restaurant');
+    callback();
+  })
+}
 
 const findAllDocuments = function(db, callback) {
   // Get the documents collection
@@ -19,103 +28,82 @@ const findAllDocuments = function(db, callback) {
   });
 }
 
-exports.connect = (callback) => {
-  mongoClient.connect(url, function(err, database) {
-    if(err) throw err;
-    db = database;
-    callback();
-  })
-}
-
 exports.findDocumentsQuery = function(criterias, callback) {
 
-  var matchDict = {}
+var matchDict = {}
 
-  Object.keys(criterias).forEach(function(element, key, _array) {
-    if (element === 'criticalFlag' && criterias[element]) {
-      matchDict.criticalFlag = "Critical"
+Object.keys(criterias).forEach(function(element, key, _array) {
+  if (element === 'criticalFlag' && criterias[element]) {
+    matchDict.criticalFlag = "Critical"
+  }
+
+  if (element === 'score') {
+    matchDict.score = {}
+    matchDict.score.$gte = criterias.score.min
+    matchDict.score.$lte = criterias.score.max
+  }
+
+  if (element === 'grade') {
+    if (criterias.grade.length > 0) {
+      matchDict.grade = {}
+      matchDict.grade.$in = criterias.grade
     }
+  }
 
-    if (element === 'score') {
-      matchDict.score = {}
-      matchDict.score.$gte = criterias.score.min
-      matchDict.score.$lte = criterias.score.max
+  if (element === 'violationCode') {
+    if (criterias.violationCode.length > 0) {
+      matchDict.violationCode = {}
+      matchDict.violationCode.$in = criterias.violationCode
     }
+  }
 
-    if (element === 'grade') {
-      if (criterias.grade.length > 0) {
-        matchDict.grade = {}
-        matchDict.grade.$in = criterias.grade
-      }
+  if (element === 'restaurant') {
+    if (criterias.restaurant.borough != "") {
+      matchDict["restaurant.borough"] = criterias.restaurant.borough
     }
-
-    if (element === 'violationCode') {
-      if (criterias.violationCode.length > 0) {
-        matchDict.violationCode = {}
-        matchDict.violationCode.$in = criterias.violationCode
-      }
+    if (criterias.restaurant.cuisineType != "") {
+      matchDict["restaurant.cuisineType"] = criterias.restaurant.cuisineType
     }
+  }
+})
 
-    if (element === 'restaurant') {
-      if (criterias.restaurant.borough != "") {
-        matchDict["restaurant.borough"] = criterias.restaurant.borough
+console.log(matchDict);
+
+const collection = db.collection('inspectionsRestaurant');
+// Find some documents
+collection.aggregate([{
+    $match: matchDict
+  },
+  //{$unwind : "$restaurant"},
+  {
+    $group: {
+      "_id": {
+        id: "$idRestaurant",
+        restaurant: "$restaurant"
       }
-      if (criterias.restaurant.cuisineType != "") {
-        matchDict["restaurant.cuisineType"] = criterias.restaurant.cuisineType
-      }
+      // "Restaurant": {
+      //   $push: "$$ROOT"
+      // }
     }
-  })
-
-  console.log(matchDict);
-
-  mongodb.MongoClient.connect(url, function(err, client) {
-    if (err) reject(err);
-    console.log("Connected successfully to server");
-    const db = client.db('inspections_restaurant');
-    // Get the documents collection
-    const collection = db.collection('inspectionsRestaurant');
-
-    // Find some documents
-    collection.aggregate([{
-        $match: matchDict
-      },
-      //{$unwind : "$restaurant"},
-      {
-        $group: {
-          "_id": {
-            id: "$idRestaurant",
-            restaurant: "$restaurant"
-          }
-          // "Restaurant": {
-          //   $push: "$$ROOT"
-          // }
-        }
-      }
-      //{$unwind : "$Restaurant"}
-    ]).toArray(function(err, docs) {
-      assert.equal(err, null);
-      //Retour à la ligne pour distinguer les differents groupes de restaurant
-      //console.log("\n\n Found the following records");
-      //console.log(docs);
-      var newDocs = []
-      for (var i = 0; i < docs.length; i++) {
-        var newDoc = {}
-        newDoc.restaurant = docs[i]._id.restaurant
-        newDoc.restaurant.id = docs[i]._id.id
-        newDocs.push(newDoc.restaurant)
-      }
-      return callback(null, newDocs)
-      client.close();
-    });
-  })
+  }
+  //{$unwind : "$Restaurant"}
+]).toArray(function(err, docs) {
+  assert.equal(err, null);
+  //Retour à la ligne pour distinguer les differents groupes de restaurant
+  //console.log("\n\n Found the following records");
+  //console.log(docs);
+  var newDocs = []
+  for (var i = 0; i < docs.length; i++) {
+    var newDoc = {}
+    newDoc.restaurant = docs[i]._id.restaurant
+    newDoc.restaurant.id = docs[i]._id.id
+    newDocs.push(newDoc.restaurant)
+  }
+  return callback(null, newDocs)
+});
 }
 
 exports.findInspections = function(id, callback) {
-  mongodb.MongoClient.connect(url, function(err, client) {
-    if (err) reject(err);
-    console.log("Connected successfully to server");
-    const db = client.db('inspections_restaurant');
-    // Get the documents collection
     const collection = db.collection('inspectionsRestaurant');
     // Find some documents
     collection.aggregate([{
@@ -135,36 +123,19 @@ exports.findInspections = function(id, callback) {
       console.log(docs);
       return callback(null, docs)
     });
-  })
 }
 
 exports.getDocuments = function() {
   return new Promise(function(resolve, reject) {
-    // Use connect method to connect to the server
-    mongodb.MongoClient.connect(url, function(err, client) {
-      if (err) reject(err);
-      console.log("Connected successfully to server");
-
-      const db = client.db('inspections_restaurant');
-
       findDocumentsQuery(db, function(err, docs) {
         if (err) reject(err)
         resolve(docs)
-        client.close();
       });
     });
-  })
 }
 
 exports.doRequest = function(type, query, projection, callback) {
-  // Use connect method to connect to the server
-  mongodb.MongoClient.connect(url, function(err, client) {
-    if (err) callback(err);
-    console.log("Connected successfully to server");
-
-    const db = client.db('inspections_restaurant');
     const collection = db.collection('inspectionsRestaurant');
-
     switch (type) {
       case "find":
         collection.find(JSON.parse(query), JSON.parse(projection)).toArray(function(err, docs) {
@@ -178,7 +149,7 @@ exports.doRequest = function(type, query, projection, callback) {
       case "aggregate":
         console.log(query);
         collection.aggregate(JSON.parse(query)).toArray(function(error, docs) {
-          if (err) callback(error);
+          if (error) callback(error);
           console.log("Found the following records");
           console.log(docs)
           callback(null, docs)
@@ -205,16 +176,10 @@ exports.doRequest = function(type, query, projection, callback) {
         });
         break;
     }
-
-  });
 }
 
 exports.updateDocument = function(location) {
   return new Promise(function(resolve, reject) {
-    mongodb.MongoClient.connect(url, function(err, client) {
-      if (err) reject(err);
-
-      const db = client.db('inspections_restaurant');
       const collection = db.collection('inspectionsRestaurant');
       collection.updateOne({
         _id: location[0]
@@ -226,34 +191,24 @@ exports.updateDocument = function(location) {
       }, function(err, result) {
         if (err) reject(err);
         resolve(result);
-        client.close();
       });
+    })
+}
+
+exports.getCriterias = (callback) => {
+  json_criterias = {}
+  findBoroughs(json_criterias, function() {
+    findCuisineType(json_criterias, function() {
+      findViolationCodes(json_criterias, function() {
+        findGrades(json_criterias, function() {
+          return callback(null, json_criterias)
+        })
+      })
     })
   })
 }
 
-exports.getCriterias = (callback) => {
-  // Use connect method to connect to the server
-  //mongodb.MongoClient.connect(url, function(err, client) {
-    //if (err) reject(err);
-    //console.log("Connected successfully to server");
-    //const db = client.db('inspections_restaurant');
-    json_criterias = {}
-
-    findBoroughs(db, json_criterias, function() {
-      findCuisineType(db, json_criterias, function() {
-        findViolationCodes(db, json_criterias, function() {
-          findGrades(db, json_criterias, function() {
-            return callback(null, json_criterias)
-            client.close();
-          })
-        })
-      })
-    })
-  //})
-}
-
-const findBoroughs = function(db, json_criterias, callback) {
+const findBoroughs = function(json_criterias, callback) {
   // Get the documents collection
   const collection = db.collection('inspectionsRestaurant');
   // Find some documents
@@ -268,7 +223,7 @@ const findBoroughs = function(db, json_criterias, callback) {
   });
 }
 
-const findCuisineType = function(db, json_criterias, callback) {
+const findCuisineType = function(json_criterias, callback) {
   // Get the documents collection
   const collection = db.collection('inspectionsRestaurant');
   // Find some documents
@@ -283,7 +238,7 @@ const findCuisineType = function(db, json_criterias, callback) {
   });
 }
 
-const findViolationCodes = function(db, json_criterias, callback) {
+const findViolationCodes = function(json_criterias, callback) {
   // Get the documents collection
   const collection = db.collection('inspectionsRestaurant');
   // Find some documents
@@ -298,7 +253,7 @@ const findViolationCodes = function(db, json_criterias, callback) {
   });
 }
 
-const findGrades = function(db, json_criterias, callback) {
+const findGrades = function(json_criterias, callback) {
   // Get the documents collection
   const collection = db.collection('inspectionsRestaurant');
   // Find some documents
