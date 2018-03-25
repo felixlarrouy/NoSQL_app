@@ -3,6 +3,8 @@ const assert = require('assert');
 
 // Connection URL
 const url = 'mongodb://nosql_app:p4ssword@ds113849.mlab.com:13849/inspections_restaurant';
+var mongoClient = mongodb.MongoClient;
+var db;
 
 const findAllDocuments = function(db, callback) {
   // Get the documents collection
@@ -15,6 +17,14 @@ const findAllDocuments = function(db, callback) {
     if (err) callback(err);
     callback(null, docs);
   });
+}
+
+exports.connect = (callback) => {
+  mongoClient.connect(url, function(err, database) {
+    if(err) throw err;
+    db = database;
+    callback();
+  })
 }
 
 exports.findDocumentsQuery = function(criterias, callback) {
@@ -224,10 +234,10 @@ exports.updateDocument = function(location) {
 
 exports.getCriterias = (callback) => {
   // Use connect method to connect to the server
-  mongodb.MongoClient.connect(url, function(err, client) {
-    if (err) reject(err);
-    console.log("Connected successfully to server");
-    const db = client.db('inspections_restaurant');
+  //mongodb.MongoClient.connect(url, function(err, client) {
+    //if (err) reject(err);
+    //console.log("Connected successfully to server");
+    //const db = client.db('inspections_restaurant');
     json_criterias = {}
 
     findBoroughs(db, json_criterias, function() {
@@ -240,7 +250,7 @@ exports.getCriterias = (callback) => {
         })
       })
     })
-  })
+  //})
 }
 
 const findBoroughs = function(db, json_criterias, callback) {

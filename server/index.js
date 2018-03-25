@@ -52,10 +52,13 @@ router.get('/locations', (req, res) => {
   })
 })
 
-router.get('/criterias', (req, res) => {
-  mongodb.getCriterias((err, criterias) => {
-    res.json(criterias);
-  })
+router.get('/connect', (req, res) => {
+  mongodb.connect(function() {
+    console.log("Connected to the database");
+    mongodb.getCriterias((err, criterias) => {
+      res.json(criterias);
+    })
+  });
 })
 
 router.get('/inspections/:id', (req, res) => {
