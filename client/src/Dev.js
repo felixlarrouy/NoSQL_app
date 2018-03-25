@@ -39,7 +39,7 @@ class App extends Component {
 
   }
   aggregateChange(event) {
-     this.setState({query: event.target.value.toString()});
+     this.setState({aggregate: event.target.value.toString()});
    }
   queryChange(event) {
      this.setState({query: event.target.value.toString()});
