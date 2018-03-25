@@ -129,14 +129,22 @@ getInspections = (id) => {
   }).then( criterias =>{
     this.setState({boroughs: criterias.boroughs, cuisineTypes: criterias.cuisineTypes, violationCode: criterias.violationCodes, grade: criterias.grades, connected: true}, this.handleLoadingState(false))
 }).catch(err =>this.setState({ error: err, loading:false}));
-
  }
 
  disconnect = () => {
-   console.log("disconnect")
-   this.setState({
-     connected: false,
-   });
+  this.handleLoadingState(true)
+   fetch('/disconnect').then(res =>{
+     if (res.ok) {
+       this.setState({
+         connected: false,
+         loading:false,
+          results:[]
+       });
+        } else {
+          throw new Error('Failed to load the filters');
+        }
+   }).catch(err =>this.setState({ error: err, loading:false}));
+
  }
 
     render() {

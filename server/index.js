@@ -26,12 +26,22 @@ const status = {
   'notFound': 404
 };
 
+
+
+
 router.get('/connect', (req, res) => {
   mongodb.connect(function() {
     console.log("Connected to the database");
     mongodb.getCriterias((err, criterias) => {
       res.json(criterias);
     })
+  });
+})
+
+router.get('/disconnect', (req, res) => {
+  mongodb.disconnect(function() {
+    console.log("Disconnected from the database");
+    res.status(status.ok).send("Disconnected")
   });
 })
 

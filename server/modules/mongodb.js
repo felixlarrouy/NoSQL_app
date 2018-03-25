@@ -15,6 +15,11 @@ exports.connect = function(callback) {
   })
 }
 
+exports.disconnect = function(callback) {
+  db = null
+  callback();
+}
+
 const findAllDocuments = function(db, callback) {
   // Get the documents collection
   const collection = db.collection('inspectionsRestaurant');
