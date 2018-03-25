@@ -14,18 +14,11 @@ const Option = Select.Option;
 class App extends Component {
   constructor(props) {
     super(props)
-        this.state = {boroughs: ['All'], cuisineTypes: ['All'], violationCode:[], grade :[], loading: false, results:[],
+        this.state = {connected:false,boroughs: ['All'], cuisineTypes: ['All'], violationCode:[], grade :[], loading: false, results:[],
         filters:{ restaurant: {borough:"", cuisineType:""} , grade:[], violationCode:[], criticalFlag:false, score:{min:0,max:160}},
-        resInspections:[],modal:false,loadingModal:false
+        resInspections:[], modal:false, loadingModal:false
       }
   }
-
-async componentDidMount() {
-   const response = await fetch('/criterias')
-   const criterias = await response.json()
-    this.setState({boroughs: criterias.boroughs, cuisineTypes: criterias.cuisineTypes, violationCode: criterias.violationCodes, grade: criterias.grades});
- }
-
 
  handleLoadingState = (loading) =>{
    this.setState({loading:loading});
@@ -119,9 +112,30 @@ getInspections = (id) => {
    })
 }
 
- handleOk = (e) => {
+ handleOk = () => {
    this.setState({
      modal: false,
+   });
+ }
+
+ connect = () => {
+   this.handleLoadingState(true)
+  fetch('/criterias').then(res =>{
+    if (res.ok) {
+         return res.json();
+       } else {
+         throw new Error('Failed to load the filters');
+       }
+  }).then( criterias =>{
+    this.setState({boroughs: criterias.boroughs, cuisineTypes: criterias.cuisineTypes, violationCode: criterias.violationCodes, grade: criterias.grades, connected: true}, this.handleLoadingState(false))
+}).catch(err =>this.setState({ error: err, loading:false}));
+
+ }
+
+ disconnect = () => {
+   console.log("disconnect")
+   this.setState({
+     connected: false,
    });
  }
 
@@ -132,7 +146,7 @@ getInspections = (id) => {
             lineHeight: '30px',
             color:'white'
           };
-      const {error, boroughs,  cuisineTypes, violationCode, grade, resInspections} = this.state;
+      const {error, boroughs,  cuisineTypes, violationCode, grade, resInspections, connected} = this.state;
 
       const marks = {
         0: '0',
@@ -153,10 +167,12 @@ getInspections = (id) => {
           </Header>
           <Layout>
             <Sider>
+            {connected ? <Button type="primary" icon="poweroff" size="large" onClick={this.disconnect}>Disconnect</Button>
+            :  <Button type="primary" icon="sync" size="large" onClick={this.connect}>Connect</Button>}
 
               <h3 className="filter">Filters</h3>
 
-              <Select defaultValue="Boroughs" style={{ width: 120 }} onChange={this.boroughsChange}>
+              <Select defaultValue="Boroughs" style={{ width: 120 }} disabled={!connected} onChange={this.boroughsChange}>
              {boroughs.map(res =>
                 <Option value={res.toUpperCase()}>{res}</Option>
                 )
@@ -164,21 +180,21 @@ getInspections = (id) => {
               </Select>
 
 
-              <Select defaultValue="Cuisine Type" style={{ width: 120 }} onChange={this.cuisineTypeChange}>
+              <Select defaultValue="Cuisine Type" style={{ width: 120 }} disabled={!connected} onChange={this.cuisineTypeChange}>
               {cuisineTypes.map(res =>
                 <Option value={res}>{res}</Option>
                 )
               }
               </Select>
 
-              <Select placeholder="Violation Code"   mode="multiple" style={{ width: 120 }} onChange={this.violationCodeChange}>
+              <Select placeholder="Violation Code"   mode="multiple" style={{ width: 120 }} disabled={!connected} onChange={this.violationCodeChange}>
               {violationCode.map(res =>
                 <Option value={res.toUpperCase()}>{res}</Option>
                 )
               }
               </Select>
 
-              <Select placeholder="Grade" mode="multiple" style={{ width: 120 }} onChange={this.gradeChange}>
+              <Select placeholder="Grade" mode="multiple" style={{ width: 120 }} disabled={!connected} onChange={this.gradeChange}>
               {grade.map(res =>
                 <Option value={res.toUpperCase()}>{res}</Option>
                 )
@@ -189,9 +205,9 @@ getInspections = (id) => {
 
                 <div>
                 <p>Score :</p>
-                <Slider range defaultValue={[0, 160]} marks={marks} step={null} min={0} max={160} onChange={this.scoreChange}/>
+                <Slider range defaultValue={[0, 160]} marks={marks} step={null} min={0} max={160} disabled={!connected} onChange={this.scoreChange}/>
                   <p>Critical Flag : </p>
-                  <Switch checkedChildren={<Icon type="check" />}  unCheckedChildren={<Icon type="cross" />}  onChange={this.criticalFlagChange} />
+                  <Switch checkedChildren={<Icon type="check" />}  disabled={!connected} unCheckedChildren={<Icon type="cross" />}  onChange={this.criticalFlagChange} />
                 </div>
               </div>
               <Link to="/dev">
@@ -199,12 +215,12 @@ getInspections = (id) => {
             </Sider>
             <Content className="content">
 
-            {error ? <div><h3>Something went wrong .. </h3><span>Error : Failed to load Data</span></div>: <div></div>}
+            {!connected && !this.state.loading? <div className="error"><h3>You must connect to the database in order to use this app...</h3><span>Use the Connect button on your left.</span></div>: <div></div>}
+
+            {error ? <div className="error"><h3>Something went wrong .. </h3><span>Error : Failed to load Data</span></div>: <div></div>}
               {this.state.loading ? <Loading message="Working on it ..."/> :
               <div></div>
               }
-
-
 
               {this.state.results.length>0 ? <JsonTable id="json-table" rows={this.state.results} onClickRow={this.onClickRow} theadClassName="tableHead" excludeColumns={["id"]} TableSettings=""/>: <div></div> }
 
@@ -213,6 +229,12 @@ getInspections = (id) => {
                   title="Inspections"
                   visible={this.state.modal}
                   onOk={this.handleOk}
+                   onCancel={this.handleOk}
+                  footer={[
+           <Button key="submit" type="primary" onClick={this.handleOk}>
+             Ok
+           </Button>
+         ]}
                 >
                 {this.state.loadingModal ? <Loading message="Working on it ..."/> :
                 <div></div>

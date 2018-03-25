@@ -40,7 +40,7 @@ body {
 }
 
 .ant-btn-primary {
-  background-color: rgba(22, 160, 133, .6);
+  background-color: #246993;
   border: none;
 }
 
@@ -59,6 +59,8 @@ body {
   border-color: rgba(22, 160, 133, .4);
   color: #fff;
 }
+
+
 
 .txt-highlight {
   color: rgba(22, 160, 133, 1);
@@ -194,6 +196,10 @@ textarea{
 }
 
 /* Content */
+
+.error{
+  text-align: center;
+}
 
 .result {
   color: white;
