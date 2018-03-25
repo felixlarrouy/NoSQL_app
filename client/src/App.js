@@ -211,7 +211,7 @@ getInspections = (id) => {
                 </div>
               </div>
               <Link to="/dev">
-               <Button type="primary" icon="setting" size="large" >Dev Tools</Button></Link>
+               <Button type="primary" icon="setting" disabled={!connected}  size="large" >Dev Tools</Button></Link>
             </Sider>
             <Content className="content">
 
