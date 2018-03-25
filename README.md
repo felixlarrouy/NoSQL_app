@@ -31,11 +31,19 @@ Run the web application:
 
 ### Main page
 
-![main-page](./img/main-page.png)
+When you arrive on the main page, your are disconnected from the database. You can't execute any query (filters are greyed).
 
-You can select filters on the left side to display the corresponding restaurants.
+![main-page](./img/main-page-disconnect.png)
+
+Type the "connect" button to connect to the database.
+
+![main-page](./img/main-page-connect.png)
+
+You can then select filters on the left side to display the corresponding restaurants.
 
 ![main-page-select-filter](./img/main-page-select-filter.png)
+
+The results are shown like so:
 
 ![main-page-results](./img/main-page-results.png)
 
